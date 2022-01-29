@@ -45,8 +45,6 @@ app.get("/categories", function(req,res){
     });
 });
 
-app.get("/404", function(req,res){
-
-res.sendFile(path.join(__dirname,"/views/404page.html"));
-
-});
+app.use(function (req, res) {
+    res.status(404).sendFile(path.join(__dirname, "/views/index.html"));
+  })
