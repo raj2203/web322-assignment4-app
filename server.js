@@ -2,14 +2,22 @@ var express = require("express");
 var app = express();
 
 var path = require("path");
-var blogService = require("blog-service.js");
+var blogService = require("./blog-service.js");
 
 var HTTP_PORT = process.env.PORT || 8080;
 app.use(express.static('public'));
 
-app.listen(HTTP_PORT, function(){
-    console.log(`server listening on: ${HTTP_PORT}`);
-});
+
+blogService.initialize().then(()=>{
+
+    app.listen(HTTP_PORT, function(){
+        console.log(`server listening on: ${HTTP_PORT}`);
+    });
+}).catch(err=>{
+    console.log(err);
+})
+
+
 
 app.get("/", function(req,res){
    
@@ -21,11 +29,24 @@ app.get("/about", function(req,res){
 
 
 app.get("/blog", function(req,res){
-    res.send("in blog");
+    blogService.getPublishedPosts().then(data=>{
+        res.json(data);
+    });
 });
 app.get("/posts", function(req,res){
-    res.send("inside posts");
+    
+        blogService.getAllPosts().then(data=>{
+            res.json(data);
+        });
 });
 app.get("/categories", function(req,res){
-    res.send("inside categories");
+    blogService.getCategories().then(data=>{
+        res.json(data);
+    });
+});
+
+app.get("/404", function(req,res){
+
+res.sendFile(path.join(__dirname,"/views/404page.html"));
+
 });
