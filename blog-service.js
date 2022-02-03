@@ -14,21 +14,21 @@ module.exports.initialize = function()
 
         try {
             fs.readFile('./data/posts.json', 'utf8', (err, data) => {
-                if (err) throw err;
+            
                 posts = JSON.parse(data);
             });
             fs.readFile('./data/categories.json', 'utf8', (err, data) => {
-                //if (err) throw err;
+                
                 categories = JSON.parse(data);
-               
+                console.log("initialized done");
+                resolve("Initialized successfully");
             });
         }catch (error) {
             console.log("initialized failed with " + error);
             reject("initialized failed");
         }
         
-        console.log("initialized done");
-        resolve("Initialized successfully");
+      
     });
 }
 
