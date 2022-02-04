@@ -14,7 +14,7 @@ module.exports.initialize = function()
 
         try {
             fs.readFile('./data/posts.json', 'utf8', (err, data) => {
-            
+            if (err) throw err;
                 posts = JSON.parse(data);
             });
             fs.readFile('./data/categories.json', 'utf8', (err, data) => {
@@ -37,6 +37,8 @@ module.exports.initialize = function()
 module.exports.getAllPosts = function()
 {
     return new Promise((resolve,reject)=>{
+
+        
 
         if(posts.length === 0)
         {

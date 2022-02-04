@@ -1,3 +1,16 @@
+/*********************************************************************************
+* WEB322 – Assignment 1
+* I declare that this assignment is my own work in accordance with Seneca Academic Policy.
+* No part of this assignment has been copied manually or electronically from any other source
+* (including web sites) or distributed to other students.
+*
+* Name: Prince Jodhani   Student ID: 149455206   Date: 04/02/2022
+*
+* Online (Heroku) URL: https://web322-assignment2-prince.herokuapp.com/
+*
+********************************************************************************/ 
+
+
 var express = require("express");
 var app = express();
 
@@ -31,18 +44,28 @@ app.get("/about", function(req,res){
 app.get("/blog", function(req,res){
     blogService.getPublishedPosts().then(data=>{
         res.json(data);
-    });
+    }).catch((err) => {
+        console.log(err);
+        res.json(err);
+      });
 });
 app.get("/posts", function(req,res){
-    
+   
         blogService.getAllPosts().then(data=>{
             res.json(data);
-        });
+        }).catch((err) => {
+            console.log(err);
+            res.json(err);
+          });
 });
 app.get("/categories", function(req,res){
     blogService.getCategories().then(data=>{
         res.json(data);
-    });
+
+    }).catch((err) => {
+        console.log(err);
+        res.json(err);
+      });
 });
 
 app.use(function (req, res) {
