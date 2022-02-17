@@ -39,7 +39,9 @@ app.get("/", function(req,res){
 app.get("/about", function(req,res){
     res.sendFile(path.join(__dirname, "/views/about.html"));
 });
-
+app.get("/posts/add", function(req,res){
+    res.sendFile(path.join(__dirname, "/views/addPost.html"));
+});
 
 app.get("/blog", function(req,res){
     blogService.getPublishedPosts().then(data=>{
@@ -73,10 +75,6 @@ app.use(function (req, res) {
   })
 
 
-  app.get("/posts/add", function(req,res){
-res.sendFile(path.join(__dirname, "views/addPost.html"));
-  });
 
-  app.get("/about", function(req,res){
-    res.sendFile(path.join(__dirname, "/views/about.html"));
-});
+
+ 
