@@ -100,3 +100,91 @@ module.exports.getCategories = function()
         }
     });
 }
+
+//--------------------- Add new ------------------------------
+
+module.exports.addPost = function(postData) {
+
+     return new Promise((resolve,reject)=>{
+
+       postData.id = posts.length + 1;
+       posts.push(postData);
+        
+     resolve();
+    });
+
+};
+
+// ---------------------- getbyid ----------------------------
+
+module.exports.getPostById = function(num) {
+
+    return new Promise((resolve,reject)=>{
+
+    var temp;
+     
+        for (var i=0; i < posts.length; i++){
+            if (posts[i].id == num) {
+              
+                temp = posts[i];
+                i = posts.length;
+            }
+        }
+ 
+        if(temp === "undefined") {
+       
+         reject({message: "no data found"});
+        }  
+ 
+       
+    resolve(temp);
+   });
+
+};
+
+//---------------------- getquery ---------------------
+module.exports.getPostsByCategory = function (cid) {
+    //console.log (statusId);
+    var temp = [];
+
+    return new Promise((resolve,reject)=>{
+        for (var i=0; i < posts.length; i++){
+            if (posts[i].category == cid) {
+                temp.push(posts[i]);
+            }
+        }
+ 
+        if(temp.length === 0) {
+       
+         reject({message: "No Any Data Found"});
+        }  
+ 
+     resolve (temp);
+       });
+    
+};
+
+//--------------------- getbydate ------------------------
+module.exports.getPostsByMinDate = function (minDateStr) {
+    //console.log (statusId);
+    var temp = [];
+    
+    return new Promise((resolve,reject)=>{
+ 
+        for (var i=0; i < posts.length; i++){
+           
+            if (new Date(posts[i].postDate) >= new Date(minDateStr)) {
+                temp.push(posts[i]);
+            }
+        }
+        
+        if (temp.length === 0) {
+            reject({ message: "No Any Data Found" });
+        }
+        else {
+            resolve(temp);
+
+        }
+       });
+    
+};
