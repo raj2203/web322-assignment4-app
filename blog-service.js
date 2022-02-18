@@ -142,9 +142,9 @@ module.exports.getPostById = function(num) {
 
 };
 
-//---------------------- getquery ---------------------
+//---------------------- getbycategory ---------------------
 module.exports.getPostsByCategory = function (cid) {
-    //console.log (statusId);
+
     var temp = [];
 
     return new Promise((resolve,reject)=>{
@@ -166,7 +166,7 @@ module.exports.getPostsByCategory = function (cid) {
 
 //--------------------- getbydate ------------------------
 module.exports.getPostsByMinDate = function (minDateStr) {
-    //console.log (statusId);
+
     var temp = [];
     
     return new Promise((resolve,reject)=>{
@@ -177,7 +177,7 @@ module.exports.getPostsByMinDate = function (minDateStr) {
                 temp.push(posts[i]);
             }
         }
-        
+
         if (temp.length === 0) {
             reject({ message: "No Any Data Found" });
         }

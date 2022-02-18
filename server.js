@@ -42,13 +42,7 @@ cloudinary.config({
     secure: true
 });
 
-// const storage = multer.diskStorage({
-//     destination: "./public/photos/",
-//     filename: function (req, file, cb) {
-//       cb(null,Date.now() + path.extname(file.originalname));
-//     }
-//   });
-// const upload = multer({storage: storage});
+
   
 const upload = multer();
 
@@ -95,7 +89,7 @@ app.post("/posts/add", upload.single("featureImage"), function (req, res) {
 
         // TODO: Process the req.body and add it as a new Blog Post before redirecting to /posts
           //res.json({file: req.file.path, body: req.body});
-          
+
           blogService.addPost(req.body).then(()=>{
                 res.redirect("/posts")
           });
