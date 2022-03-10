@@ -83,6 +83,36 @@ module.exports.getPublishedPosts = function()
     });
 }
 
+//------------------------------------------ getPublishedPostsByCategory(category) -----------------------
+module.exports.getPublishedPostsByCategory = function(category)
+{
+    let posttemp = [];
+    return new Promise((resolve,reject)=>{
+        if(posts.length === 0)
+        {
+            var errmsg = "object does not have any data available at this time";
+            reject({message: errmsg});
+        }else{
+
+            for(let i = 0; i < posts.length; i++)
+            {
+                if(posts[i].published == true && posts[i].category == category)
+                {
+                    posttemp.push(posts[i]);
+
+                }
+            }
+            if(posttemp === 0)
+            {
+                errmsg = "object does not have any published post yet!";
+            }
+            else{
+                resolve(posttemp);
+            }
+           
+        }
+    });
+}
 
 // --------------------- getCategories() --------------------
 
@@ -106,8 +136,9 @@ module.exports.getCategories = function()
 module.exports.addPost = function(postData) {
 
      return new Promise((resolve,reject)=>{
-
+        let currDate = new Date().toISOString().slice(0, 10);
        postData.id = posts.length + 1;
+       postData.postDate = currDate;
        posts.push(postData);
         
      resolve();
