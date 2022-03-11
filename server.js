@@ -4,9 +4,9 @@
 * No part of this assignment has been copied manually or electronically from any other source
 * (including web sites) or distributed to other students.
 *
-* Name: Prince Jodhani   Student ID: 149455206   Date: 09-03-2022
+* Name:    Student ID:    Date: 
 *
-* Online (Heroku) URL: https://web322-assignment4-prince.herokuapp.com/
+* Online (Heroku) URL: 
 *
 ********************************************************************************/
 
@@ -47,10 +47,7 @@ app.engine(".hbs",exphbs.engine({
            safeHTML: function(context){
             return stripJs(context);
            }
-           
-        // bold: function(options){
-        //     return `<strong>${options.fn(this)}</strong>`
-        // }
+        
     }
 }));
 app.set("view engine",".hbs");
@@ -76,9 +73,9 @@ blogService.initialize().then(() => {
 
 
 cloudinary.config({
-    cloud_name: 'web322-api-prince',
-    api_key: '676992143767744',
-    api_secret: 'WN2d8B5XeOiSH_pgTOdH-K3rJDs',
+    cloud_name: 'webassign3',
+    api_key: '682244112899971',
+    api_secret: 'IXL7rzmSEPgk6nU55E71SexBfgM',
     secure: true
 });
 
@@ -89,14 +86,12 @@ const upload = multer();
 app.use(express.urlencoded({extended: true}));
 
 app.get("/posts/add", function (req, res) {
-    // res.sendFile(path.join(__dirname, "/views/addPost.html"));
     res.render("addPost");
 });
 
 app.post("/posts/add", upload.single("featureImage"), function (req, res) {
   
 
-    //res.send(`<img src="/photos/${req.file.filename}"></img>`);
 
     if (req.file) {
         let streamUpload = (req) => {
@@ -128,9 +123,6 @@ app.post("/posts/add", upload.single("featureImage"), function (req, res) {
         req.body.featureImage = imageUrl;
         req.body.published = (req.body.published) ? true : false;
 
-        // TODO: Process the req.body and add it as a new Blog Post before redirecting to /posts
-          //res.json({file: req.file.path, body: req.body});
-
           blogService.addPost(req.body).then(()=>{
                 res.redirect("/posts")
           });
@@ -156,13 +148,11 @@ app.get("/", function (req, res) {
     res.redirect("/blog");
 });
 app.get("/about", function (req, res) {
-    // res.sendFile(path.join(__dirname, "/views/about.html"));
     res.render("about");
 });
 
 app.get('/blog/:id', async (req, res) => {
 
-    // Declare an object to store properties for the view
     let viewData = {};
 
     try{
@@ -179,7 +169,7 @@ app.get('/blog/:id', async (req, res) => {
             posts = await blogService.getPublishedPosts();
         }
 
-        // sort the published posts by postDate
+     
         posts.sort((a,b) => new Date(b.postDate) - new Date(a.postDate));
 
         // store the "posts" and "post" data in the viewData object (to be passed to the view)
@@ -258,6 +248,22 @@ app.get('/blog/:id', async (req, res) => {
     
     });
     
+
+
+
+
+app.get("/categories", function (req, res) {
+    blogService.getCategories().then(data => {
+    res.render("categories", {categories: data});
+
+    }).catch((err) => {
+        console.log(err);
+        res.render("categories",{message: "no results"});
+    });
+});
+
+
+
 app.get("/posts", function (req, res) {
 
   
@@ -292,22 +298,6 @@ app.get("/posts", function (req, res) {
         });
       }
 });
-
-app.get("/categories", function (req, res) {
-    blogService.getCategories().then(data => {
-    res.render("categories", {categories: data});
-
-    }).catch((err) => {
-        console.log(err);
-        res.render("categories",{message: "no results"});
-    });
-});
-
 app.use(function (req, res) {
-     res.status(404).sendFile(path.join(__dirname, "/views/error404.html"));
-    
+    res.status(404).render("404");
 })
-
-
-
-

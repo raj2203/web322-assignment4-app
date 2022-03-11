@@ -1,221 +1,89 @@
-const fs = require("fs"); 
+const fs = require("fs");
 
-const { rejects } = require("assert");
-const { json } = require("express/lib/response");
-const { resolve } = require("path");
+let posts = [];
+let categories = [];
 
-var posts = [];
-var categories = [];
-
-//------------------- INITIALIZED FUNCTION ----------------------
-module.exports.initialize = function()
-{
-    return new Promise((resolve,reject)=>{
-
-        try {
-            fs.readFile('./data/posts.json', 'utf8', (err, data) => {
-            if (err) throw err;
+module.exports.initialize = function () {
+    return new Promise((resolve, reject) => {
+        fs.readFile('./data/posts.json', 'utf8', (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
                 posts = JSON.parse(data);
-            });
-            fs.readFile('./data/categories.json', 'utf8', (err, data) => {
-                
-                categories = JSON.parse(data);
-                console.log("initialized done");
-                resolve("Initialized successfully");
-            });
-        }catch (error) {
-            console.log("initialized failed with " + error);
-            reject("initialized failed");
-        }
-        
-      
+
+                fs.readFile('./data/categories.json', 'utf8', (err, data) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        categories = JSON.parse(data);
+                        resolve();
+                    }
+                });
+            }
+        });
     });
 }
 
-//-------------------- getAllPosts FUNCTION --------------------------
-
-module.exports.getAllPosts = function()
-{
+module.exports.getAllPosts = function(){
     return new Promise((resolve,reject)=>{
+        (posts.length > 0 ) ? resolve(posts) : reject("no results returned"); 
+    });
+}
 
-        
+module.exports.getPostsByCategory = function(category){
+    return new Promise((resolve,reject)=>{
+        let filteredPosts = posts.filter(post=>post.category == category);
 
-        if(posts.length === 0)
-        {
-            var errmsg = "object does not have any data available at this time";
-            reject({message: errmsg});
+        if(filteredPosts.length == 0){
+            reject("no results returned")
         }else{
-            resolve(posts);
+            resolve(filteredPosts);
         }
-
     });
 }
 
-// --------------------- getPublishedPosts() --------------------
+module.exports.getPostsByMinDate = function(minDateStr) {
+    return new Promise((resolve, reject) => {
+        let filteredPosts = posts.filter(post => (new Date(post.postDate)) >= (new Date(minDateStr)))
 
-module.exports.getPublishedPosts = function()
-{
-    let posttemp = [];
+        if (filteredPosts.length == 0) {
+            reject("no results returned")
+        } else {
+            resolve(filteredPosts);
+        }
+    });
+}
+
+module.exports.getPostById = function(id){
     return new Promise((resolve,reject)=>{
-        if(posts.length === 0)
-        {
-            var errmsg = "object does not have any data available at this time";
-            reject({message: errmsg});
+        let foundPost = posts.find(post => post.id == id);
+
+        if(foundPost){
+            resolve(foundPost);
         }else{
-
-            for(let i = 0; i < posts.length; i++)
-            {
-                if(posts[i].published == true)
-                {
-                    posttemp.push(posts[i]);
-
-                }
-            }
-            if(posttemp === 0)
-            {
-                errmsg = "object does not have any published post yet!";
-            }
-            else{
-                resolve(posttemp);
-            }
-           
+            reject("no result returned");
         }
     });
 }
 
-//------------------------------------------ getPublishedPostsByCategory(category) -----------------------
-module.exports.getPublishedPostsByCategory = function(category)
-{
-    let posttemp = [];
+module.exports.addPost = function(postData){
     return new Promise((resolve,reject)=>{
-        if(posts.length === 0)
-        {
-            var errmsg = "object does not have any data available at this time";
-            reject({message: errmsg});
-        }else{
-
-            for(let i = 0; i < posts.length; i++)
-            {
-                if(posts[i].published == true && posts[i].category == category)
-                {
-                    posttemp.push(posts[i]);
-
-                }
-            }
-            if(posttemp === 0)
-            {
-                errmsg = "object does not have any published post yet!";
-            }
-            else{
-                resolve(posttemp);
-            }
-           
-        }
+        postData.published = postData.published ? true : false;
+        postData.id = posts.length + 1;
+        posts.push(postData);
+        resolve();
     });
 }
 
-// --------------------- getCategories() --------------------
-
-module.exports.getCategories = function()
-{
+module.exports.getPublishedPosts = function(){
     return new Promise((resolve,reject)=>{
-
-        if(categories.length === 0)
-        {
-            reject({message: "object does no have any data available at this time!"});
-        }
-        else
-        {
-            resolve(categories);
-        }
+        let filteredPosts = posts.filter(post => post.published);
+        (filteredPosts.length > 0) ? resolve(filteredPosts) : reject("no results returned");
     });
 }
 
-//--------------------- Add new ------------------------------
-
-module.exports.addPost = function(postData) {
-
-     return new Promise((resolve,reject)=>{
-        let currDate = new Date().toISOString().slice(0, 10);
-       postData.id = posts.length + 1;
-       postData.postDate = currDate;
-       posts.push(postData);
-        
-     resolve();
+module.exports.getCategories = function(){
+    return new Promise((resolve,reject)=>{
+        (categories.length > 0 ) ? resolve(categories) : reject("no results returned"); 
     });
-
-};
-
-// ---------------------- getbyid ----------------------------
-
-module.exports.getPostById = function(num) {
-
-    return new Promise((resolve,reject)=>{
-
-    var temp;
-     
-        for (var i=0; i < posts.length; i++){
-            if (posts[i].id == num) {
-              
-                temp = posts[i];
-                i = posts.length;
-            }
-        }
- 
-        if(temp === "undefined") {
-       
-         reject({message: "no data found"});
-        }  
- 
-       
-    resolve(temp);
-   });
-
-};
-
-//---------------------- getbycategory ---------------------
-module.exports.getPostsByCategory = function (cid) {
-
-    var temp = [];
-
-    return new Promise((resolve,reject)=>{
-        for (var i=0; i < posts.length; i++){
-            if (posts[i].category == cid) {
-                temp.push(posts[i]);
-            }
-        }
- 
-        if(temp.length === 0) {
-       
-         reject({message: "No Any Data Found"});
-        }  
- 
-     resolve (temp);
-       });
-    
-};
-
-//--------------------- getbydate ------------------------
-module.exports.getPostsByMinDate = function (minDateStr) {
-
-    var temp = [];
-    
-    return new Promise((resolve,reject)=>{
- 
-        for (var i=0; i < posts.length; i++){
-           
-            if (new Date(posts[i].postDate) >= new Date(minDateStr)) {
-                temp.push(posts[i]);
-            }
-        }
-
-        if (temp.length === 0) {
-            reject({ message: "No Any Data Found" });
-        }
-        else {
-            resolve(temp);
-
-        }
-       });
-    
-};
+}
